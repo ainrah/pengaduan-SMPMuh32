@@ -13,32 +13,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $errors = [];
     if (empty($nama_user)) $errors['nama_user'] = "Nama wajib diisi.";
     if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) $errors['email'] = "Email tidak valid.";
-    if (empty($no_hp)) $errors['no_hp'] = "Nomor HP wajib diisi.";
+    if (empty($no_hp) || !is_numeric($no_hp)) $errors['no_hp'] = "Nomor HP wajib diisi dengan angka.";
     if (empty($password)) $errors['password'] = "Password wajib diisi.";
     if ($password !== $password_confirm) $errors['password_confirm'] = "Konfirmasi password tidak cocok.";
 
     if (empty($errors)) {
-        // Generate ID user (tanggal + nomor urut + 'U')
-        $date = date("Ymd");
-    
-        // Cari ID terakhir di database yang sesuai dengan tanggal hari ini
-        $statement = $db->query("SELECT id_user FROM user WHERE id_user LIKE '{$date}%' ORDER BY id_user DESC LIMIT 1");
+        // Format tanggal
+        $tanggal = date("dmY");
+        $prefix = "SMPM";
+
+        // Cari nomor urut terakhir di database untuk format tanggal dan prefix ini
+        $statement = $db->query("SELECT id_user FROM user WHERE id_user LIKE '{$prefix}{$tanggal}%' ORDER BY id_user DESC LIMIT 1");
         $result = $statement->fetch(PDO::FETCH_ASSOC);
-    
+
         if ($result) {
             // Ambil nomor urut terakhir dan tambahkan 1
-            $last_id = substr($result['id_user'], 8, 3); // Ambil bagian nomor urut
-            $urut = str_pad($last_id + 1, 3, '0', STR_PAD_LEFT);
+            $last_id = substr($result['id_user'], 0, 6); // Ambil bagian nomor urut
+            $urut = str_pad($last_id + 1, 6, '0', STR_PAD_LEFT);
         } else {
-            // Jika belum ada ID di tanggal hari ini, mulai dari 001
-            $urut = '001';
+            // Jika belum ada ID pada tanggal ini, mulai dari 000001
+            $urut = '000001';
         }
-    
-        $id_user = $date . $urut . 'U';
-    
+
+        $id_user = $urut . $prefix . $tanggal;
+
         // Hash password sebelum menyimpan
         $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-    
+
         // Insert data ke database
         $stmt = $db->prepare("INSERT INTO user (id_user, nama_user, email, no_hp, password) VALUES (:id_user, :nama_user, :email, :no_hp, :password)");
         $stmt->bindParam(':id_user', $id_user);
@@ -46,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->bindParam(':email', $email);
         $stmt->bindParam(':no_hp', $no_hp);
         $stmt->bindParam(':password', $hashed_password);
-    
+
         if ($stmt->execute()) {
             echo "Registrasi berhasil!";
             header("Location: login.php");
@@ -54,8 +55,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             echo "Gagal menyimpan data.";
         }
+    } else {
+        // Tampilkan pesan error
+        foreach ($errors as $field => $error) {
+            echo "<p>{$field}: {$error}</p>";
+        }
     }
 }
+
 ?>
 <!DOCTYPE html>
 <html lang="id">

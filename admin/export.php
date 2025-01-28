@@ -275,109 +275,26 @@ th, td {
         <a class="nav-link active" id="laporan-tab" data-toggle="tab" href="#laporan" role="tab">Laporan</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link" id="penanganan-tab" data-toggle="tab" href="#penanganan" role="tab">Penanganan</a>
+        <a class="nav-link" id="penanganan-tab" data-toggle="tab" href="#penanganan" role="tab">Surat Penanganan</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link" id="tanggapan-tab" data-toggle="tab" href="#tanggapan" role="tab">Tanggapan</a>
+        <a class="nav-link" id="tanggapan-tab" data-toggle="tab" href="#tanggapan" role="tab">Data Validasi</a>
     </li>
     <li class="nav-item">
         <a class="nav-link" id="surat-tab" data-toggle="tab" href="#surat" role="tab">Surat Penanganan</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link" id="jadwal-tab" data-toggle="tab" href="#jadwal" role="tab">Jadwal Penanganan</a>
+        <a class="nav-link" id="jadwal-tab" data-toggle="tab" href="#jadwal" role="tab">Data Penanganan</a>
     </li>
 
 </ul>
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h4>Manajemen Laporan</h4>
-    <button onclick="printAllTabs()" class="btn btn-primary">Cetak Semua Tab</button>
+    <!-- <button onclick="printAllTabs()" class="btn btn-primary">Cetak Semua Tab</button> -->
     <button onclick="window.print()" class="btn btn-primary">Cetak</button>
-    <button onclick="generatePDF()">Unduh PDF</button>
+    <!-- <button onclick="generatePDF()">Unduh PDF</button> -->
 </div>
-            <!-- DataTables Card
-            <div class="card mb-3">
-                <div class="card-header">
-                    <i class="fa fa-table"></i> Cetak Laporan Masuk
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-striped table-bordered" id="example" width="100%">
-                            <thead>
-                                <tr>
-                                <th>Nama Pelapor</th>
-                                <th>No HP Pelapor</th>
-                                <th>Kelas Pelapor</th>
-                                <th>Nama Korban</th>
-                                <th>No HP Korban</th>
-                                <th>Kelas Korban</th>
-                                <th>Nama Pelaku</th>
-                                <th>No HP Pelaku</th>
-                                <th>Tanggal Pengaduan</th>
-                                <th>Tanggal Kejadian</th>
-                                <th>Tempat Kejadian</th>
-                                <th>Kategori Kekerasan</th>
-                                <th>Subjek Pengaduan</th>
-                                <th>Kronologi Kejadian</th>
-                                <th>Bukti Kekerasan</th>
-                                <th>Status</th>
-                                    <th class="sorting_asc_disabled sorting_desc_disabled">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php
-                                // Ambil semua record dari tabel laporan
-                              
-
-                                foreach ($statement as $key) {
-                                    $mysqldate = $key['tanggal_pengaduan'];
-                                    $phpdate = strtotime($mysqldate);
-                                    $tanggal = date('d/m/Y', $phpdate);
-                                
-                                    $status  = $key['status'];
-                                    $style_status = ($status == "menunggu") 
-                                        ? "<p style=\"background-color:#009688;color:#fff;padding-left:2px;padding-right:2px;padding-bottom:2px;margin-top:16px;font-size:15px;font-style:italic;\">Ditanggapi</p>" 
-                                        : "<p style=\"background-color:#FF9800;color:#fff;padding-left:2px;padding-right:2px;padding-bottom:2px;margin-top:16px;font-size:15px;font-style:italic;\">Menunggu</p>";
-                                }
-                                
-                                    ?>
-                                    <tr>
-                                    <td><?php echo $key['id_laporan']; ?></td>
-                                    <td><?php echo $key['nama_plp']; ?></td>
-                                    <td><?php echo $key['no_hp_plp']; ?></td>
-                                    <td><?php echo $key['kls_plp']; ?></td>
-                                    <td><?php echo $key['nama_krb']; ?></td>
-                                    <td><?php echo $key['no_hp_krb']; ?></td>
-                                    <td><?php echo $key['kls_krb']; ?></td>
-                                    <td><?php echo $key['nama_plk']; ?></td>
-                                    <td><?php echo $key['no_hp_plk']; ?></td>
-                                    <td><?php echo date('d/m/Y', strtotime($key['tanggal_pengaduan'])); ?></td>
-                                    <td><?php echo date('d/m/Y', strtotime($key['tanggal_kejadian'])); ?></td>
-                                    <td><?php echo $key['tempat_kejadian']; ?></td>
-                                    <td><?php echo $key['kategori_kekerasan']; ?></td>
-                                    <td><?php echo $key['subjek_pengaduan']; ?></td>
-                                    <td><?php echo $key['kronologi_kejadian']; ?></td>
-                                    <td><?php echo $key['status']; ?></td>
-                                     
-                                    </tr>
-                                    <?php
-                              
-                                ?>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
-            </div>
-        </div>
-        /.container-fluid
-
-        <footer class="sticky-footer">
-            <div class="container">
-                <div class="text-center">
-                    <small>Copyright © SMP MUHAMMADIYAH 32 Jakarta</small>
-                </div>
-            </div>
-        </footer> -->
+           
 
 
         <!-- Scroll to Top Button-->
@@ -389,7 +306,7 @@ th, td {
   <div class="tab-content" id="myTabContent">
     <!-- Laporan Tab Content -->
     <div id="laporan" class="tab-pane fade show active" role="tabpanel" aria-labelledby="laporan-tab">
-        <h3>Laporan</h3>
+        <h3>Data Laporan</h3>
         <table class="table table-bordered">
             <thead>
             <tr>
@@ -401,91 +318,87 @@ th, td {
                     <th>Kelas Korban</th>
                     <th>Nama Pelaku</th>
                     <th>No HP Pelaku</th>
-                    <th>Tanggal Pengaduan</th>
-                    <th>Tanggal Kejadian</th>
-                    <th>Tempat Kejadian</th>
-                    <th>Kategori Kekerasan</th>
-                    <th>Subjek Pengaduan</th>
-                    <th>Kronologi Kejadian</th>
-                    <th>Bukti Kekerasan</th>
+                    <th style="width: 70    px;">Tanggal Pengaduan</th>
+                    <th style="width: 65px;">Tanggal Kejadian</th>
+                    <th style="width: 65px;">Tempat Kejadian</th>
+                    <th style="width: 65px;">Kategori Kekerasan</th>
+                    <!-- <th style="width: 65px;">Subjek Pengaduan</th> -->
+                    <th style="width: 65px;">Kronologi Kejadian</th>
+                    <th style="width: 120px;">Bukti Kekerasan</th> <!-- Tambahkan lebar khusus -->
                     <th>Status</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
                 <?php
-                                // Ambil semua record dari tabel laporan
-                              
+    // Ambil semua record dari tabel laporan
+    $sql = "SELECT * FROM laporan ORDER BY id_laporan DESC";
+    $statement = $db->query($sql);
 
-                                $sql = "SELECT * FROM laporan ORDER BY id_laporan DESC";
-                                $statement = $db->query($sql);
-                                
-                                // Ambil data
-                                $result = $statement->fetchAll(PDO::FETCH_ASSOC); // Mengambil semua data dalam bentuk array asosiatif
-                                
-                                // Jika ada data
-                                if (!empty($result)) {
-                                    foreach ($result as $key) {
-                                        $tanggal_pengaduan = !empty($key['tanggal_pengaduan']) ? date('d/m/Y', strtotime($key['tanggal_pengaduan'])) : '-';
-                                        $tanggal_kejadian = !empty($key['tanggal_kejadian']) ? date('d/m/Y', strtotime($key['tanggal_kejadian'])) : '-';
-                                    }
-                                }
-                                    ?>
+    // Ambil data
+    $result = $statement->fetchAll(PDO::FETCH_ASSOC); // Mengambil semua data dalam bentuk array asosiatif
 
-                                
-        
-                                   
-                                     <tr>
-            <td><?php echo $key['nama_plp']; ?></td>
-            <td><?php echo $key['no_hp_plp']; ?></td>
-            <td><?php echo $key['kls_plp']; ?></td>
-            <td><?php echo $key['nama_krb']; ?></td>
-            <td><?php echo $key['no_hp_krb']; ?></td>
-            <td><?php echo $key['kls_krb']; ?></td>
-            <td><?php echo $key['nama_plk']; ?></td>
-            <td><?php echo $key['no_hp_plk']; ?></td>
-            <td><?php echo $tanggal_pengaduan; ?></td>
-            <td><?php echo $tanggal_kejadian; ?></td>
-            <td><?php echo $key['tempat_kejadian']; ?></td>
-            <td><?php echo $key['kategori_kekerasan']; ?></td>
-            <td><?php echo $key['subjek_pengaduan']; ?></td>
-            <td><?php echo $key['kronologi_kejadian']; ?></td>
-            <td>
-                        <?php 
-                        $bukti = $key['bukti_kekerasan']; // Nama file dari database
-                        $file_path = "images/$bukti"; // Jalur relatif untuk browser
+    // Jika ada data
+    if (!empty($result)) {
+        foreach ($result as $key) {
+            // Format tanggal
+            $tanggal_pengaduan = !empty($key['tanggal_pengaduan']) ? date('d/m/Y', strtotime($key['tanggal_pengaduan'])) : '-';
+            $tanggal_kejadian = !empty($key['tanggal_kejadian']) ? date('d/m/Y', strtotime($key['tanggal_kejadian'])) : '-';
+            ?>
+            <tr>
+                <td><?php echo $key['nama_plp']; ?></td>
+                <td><?php echo $key['no_hp_plp']; ?></td>
+                <td><?php echo $key['kls_plp']; ?></td>
+                <td><?php echo $key['nama_krb']; ?></td>
+                <td><?php echo $key['no_hp_krb']; ?></td>
+                <td><?php echo $key['kls_krb']; ?></td>
+                <td><?php echo $key['nama_plk']; ?></td>
+                <td><?php echo $key['no_hp_plk']; ?></td>
+                <td><?php echo $tanggal_pengaduan; ?></td>
+                <td><?php echo $tanggal_kejadian; ?></td>
+                <td><?php echo $key['tempat_kejadian']; ?></td>
+                <td><?php echo $key['kategori_kekerasan']; ?></td>
+                <!--  -->
+                <td><?php echo $key['kronologi_kejadian']; ?></td>
+                <td>
+                    <?php 
+                    $bukti = $key['bukti_kekerasan']; // Nama file dari database
+                    $file_path = "images/$bukti"; // Jalur relatif untuk browser
 
-                        if (!empty($bukti) && file_exists(__DIR__ . "/images/$bukti")) {
-                            $file_extension = strtolower(pathinfo($bukti, PATHINFO_EXTENSION));
+                    if (!empty($bukti) && file_exists(__DIR__ . "/images/$bukti")) {
+                        $file_extension = strtolower(pathinfo($bukti, PATHINFO_EXTENSION));
 
-                            // Jika file adalah gambar
-                            if (in_array($file_extension, ['jpg', 'jpeg', 'png'])) {
-                                echo "<a href='$file_path' target='_blank'>
-                                        <img src='$file_path' alt='Bukti Kekerasan' style='width: 100px; height: auto;'>
-                                    </a>";
-                            } 
-                            // Jika file adalah PDF
-                            elseif ($file_extension === 'pdf') {
-                                echo "<a href='$file_path' target='_blank'>Lihat PDF</a>";
-                            }
-                        } else {
-                            echo "Tidak ada bukti";
+                        // Jika file adalah gambar
+                        if (in_array($file_extension, ['jpg', 'jpeg', 'png'])) {
+                            echo "<a href='$file_path' target='_blank'>
+                                    <img src='$file_path' alt='Bukti Kekerasan' style='width: 100px; height: auto;'>
+                                </a>";
+                        } 
+                        // Jika file adalah PDF
+                        elseif ($file_extension === 'pdf') {
+                            echo "<a href='$file_path' target='_blank'>Lihat PDF</a>";
                         }
-                        ?>
-                    </td>
-            <td><?php echo $key['status']; ?></td> <!-- Status ditampilkan tanpa gaya -->
-        </tr>
-                                    <?php
-                              
-                                ?>
-                </tr>
-            </tbody>
+                    } else {
+                        echo "Tidak ada bukti";
+                    }
+                    ?>
+                </td>
+                <td><?php echo $key['status']; ?></td>
+            </tr>
+            <?php
+        }
+    } else {
+        // Jika tidak ada data
+        echo "<tr><td colspan='16'>Tidak ada data laporan.</td></tr>";
+    }
+    ?>
+</tbody>
         </table>
     </div>
 
     <!-- Penanganan Tab Content -->
     <div id="penanganan" class="tab-pane fade" role="tabpanel" aria-labelledby="penanganan-tab">
-        <h3>Penanganan</h3>
+        <h3>Data Surat Penanganan</h3>
         <table class="table table-bordered">
             <thead>
             <tr>
@@ -549,17 +462,16 @@ th, td {
     </div>
 
     <!-- Tanggapan Tab Content -->
-    <div id="tanggapan" class="tab-pane fade" role="tabpanel" aria-labelledby="tanggapan-tab">
-        <h3>Penanganan</h3>
+    <div id="surat" class="tab-pane fade" role="tabpanel" aria-labelledby="tanggapan-tab">
+    <h3>Data Jadwal Penanganan</h3>
     <table class="table table-bordered">
         <thead>
             <tr>
                 <th>ID Surat Penanganan</th>
                 <th>Tanggal Surat</th>
                 <th>Nomor Surat</th>
-                <th>Jenis Surat</th>
-                <th>Nama Pendamping</th>
-                <th>File Surat</th>
+                
+                <th>Unggah Surat Rujukan</th>
             </tr>
         </thead>
         <tbody>
@@ -581,12 +493,11 @@ th, td {
                         <td><?php echo htmlspecialchars($row['id_jadwal']); ?></td>
                         <td><?php echo htmlspecialchars($tanggal_srt); ?></td>
                         <td><?php echo htmlspecialchars($row['lokasi_penanganan']); ?></td>
-                        <td><?php echo htmlspecialchars($row['unggah_surat_rujukan']); ?></td>
                         
                         <td>
                             <?php
-                            $file_surat = $row['file_surat'];
-                            $file_path = "uploads/$file_surat"; // Pastikan folder "uploads" ada dan berisi file
+                            $file_surat = $row['unggah_surat_rujukan'];
+                            $file_path = "images/$file_surat"; // Pastikan folder "uploads" ada dan berisi file
 
                             if (!empty($file_surat) && file_exists($file_path)) {
                                 $file_extension = strtolower(pathinfo($file_surat, PATHINFO_EXTENSION));
@@ -594,7 +505,7 @@ th, td {
                                 // Jika file adalah gambar
                                 if (in_array($file_extension, ['jpg', 'jpeg', 'png'])) {
                                     echo "<a href='$file_path' target='_blank'>
-                                            <img src='$file_path' alt='File Surat' style='width: 100px; height: auto;'>
+                                            <img src='$file_path' alt='Surat Rujukan' style='width: 100px; height: auto;'>
                                           </a>";
                                 }
                                 // Jika file adalah PDF
@@ -602,7 +513,7 @@ th, td {
                                     echo "<a href='$file_path' target='_blank'>Lihat PDF</a>";
                                 }
                             } else {
-                                echo "Tidak ada bukti";
+                                echo "Tidak ada file";
                             }
                             ?>
                         </td>
@@ -610,7 +521,103 @@ th, td {
                     <?php
                 }
             } else {
-                echo "<tr><td colspan='6'>Tidak ada data tersedia</td></tr>";
+                echo "<tr><td colspan='5'>Tidak ada data tersedia</td></tr>";
+            }
+            ?>
+        </tbody>
+    </table>
+</div>
+<div id="tanggapan" class="tab-pane fade" role="tabpanel" aria-labelledby="tanggapan-tab">
+    <h3>Validasi</h3>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>ID Tanggapan</th>
+                <th>ID Laporan</th>
+                
+                <th>Isi Tanggapan</th>
+                <th>Tanggal Tanggapan</th>
+                <th>Cerita Real Korban</th>
+                <th>Kasus Penanganan</th>
+                <th>Nama Pendamping</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php
+            // Query database
+            $sql = "SELECT * FROM tanggapan ORDER BY id_tanggapan DESC";
+            $statement = $db->query($sql);
+
+            // Ambil data
+            $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+            // Tampilkan data
+            if (!empty($result)) {
+                foreach ($result as $row) {
+                    // Format tanggal tanggapan
+                    $tanggal_tanggapan = !empty($row['tanggal_tanggapan']) ? date('d/m/Y H:i:s', strtotime($row['tanggal_tanggapan'])) : '-';
+                    ?>
+                    <tr>
+                        <td><?php echo htmlspecialchars($row['id_tanggapan']); ?></td>
+                        <td><?php echo htmlspecialchars($row['id_laporan1']); ?></td>
+                        
+                        <td><?php echo htmlspecialchars($row['isi_tanggapan']); ?></td>
+                        <td><?php echo htmlspecialchars($tanggal_tanggapan); ?></td>
+                        <td><?php echo htmlspecialchars($row['cerita_real_krb']); ?></td>
+                        <td><?php echo htmlspecialchars($row['kasus_penanganan']); ?></td>
+                        <td><?php echo htmlspecialchars($row['nama_pendamping']); ?></td>
+                    </tr>
+                    <?php
+                }
+            } else {
+                echo "<tr><td colspan='8'>Tidak ada data tersedia</td></tr>";
+            }
+            ?>
+        </tbody>
+    </table>
+</div>
+<div id="jadwal" class="tab-pane fade" role="tabpanel" aria-labelledby="penanganan-tab">
+    <h3>Data Penanganan </h3>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>ID Penanganan</th>
+                <th>Jenis Penanganan</th>
+                <th>Tanggal Penanganan</th>
+                <th>Alamat Penanganan</th>
+                <th>Nama Pendamping</th>
+                <th>Nomor HP Pendamping</th>
+                <th>ID Laporan</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php
+            // Query database
+            $sql = "SELECT * FROM penanganan ORDER BY id_penanganan DESC";
+            $statement = $db->query($sql);
+
+            // Ambil data
+            $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+            // Tampilkan data
+            if (!empty($result)) {
+                foreach ($result as $row) {
+                    // Format tanggal penanganan
+                    $tanggal_penanganan = !empty($row['tanggal_penanganan']) ? date('d/m/Y', strtotime($row['tanggal_penanganan'])) : '-';
+                    ?>
+                    <tr>
+                        <td><?php echo htmlspecialchars($row['id_penanganan']); ?></td>
+                        <td><?php echo htmlspecialchars($row['Jenis_penanganan']); ?></td>
+                        <td><?php echo htmlspecialchars($tanggal_penanganan); ?></td>
+                        <td><?php echo htmlspecialchars($row['alamat_penanganan']); ?></td>
+                        <td><?php echo htmlspecialchars($row['nama_pendamping']); ?></td>
+                        <td><?php echo htmlspecialchars($row['nomor_hp_pendamping']); ?></td>
+                        <td><?php echo htmlspecialchars($row['id_laporan2']); ?></td>
+                    </tr>
+                    <?php
+                }
+            } else {
+                echo "<tr><td colspan='7'>Tidak ada data tersedia</td></tr>";
             }
             ?>
         </tbody>

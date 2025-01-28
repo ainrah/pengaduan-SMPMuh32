@@ -184,7 +184,7 @@
                 <tbody>
                 <?php
                 // Query database
-                $sql = "SELECT * FROM jdwl_penanganan ORDER BY id_jadwal DESC LIMIT 1";
+                $sql = "SELECT * FROM jdwl_penanganan ORDER BY id_jadwal DESC  ";
                 $statement = $db->query($sql);
 
                 // Ambil data

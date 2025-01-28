@@ -10,11 +10,12 @@
 
     if (isset($_POST['Hapus'])) {
         $id_hapus = $_POST['id_laporan'];
-        // hapus semua tanggapan dari laporan yang akan dihapus
-        $statement = $db->query("DELETE FROM `tanggapan` WHERE `tanggapan`.`id_tanggapan` = $id_hapus");
-        // hapus laporan
-        $statement = $db->query("DELETE FROM `laporan` WHERE `laporan`.`id_laporan` = $id_hapus");
+        $statement = $db->prepare("DELETE FROM `laporan` WHERE `laporan`.`id_laporan` = ?");
+        $statement->execute([$id_hapus]);
         
+        // Redirect after successful deletion
+        header('Location: ' . $_SERVER['PHP_SELF']);
+        exit;
     }
     if (isset($_POST['Edit'])) {
         $id_laporan = $_POST['id_laporan'];
@@ -254,7 +255,6 @@
         <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-
         <div class="collapse navbar-collapse" id="navbarResponsive">
             <ul class="navbar-nav navbar-sidenav sidebar-menu" id="exampleAccordion">
 
@@ -277,6 +277,16 @@
                         <span class="nav-link-text">Dashboard</span>
                     </a>
                 </li>
+                <li class="nav-item dropdown" data-toggle="tooltip" data-placement="right" title="Penanganan">
+                    <a class="nav-link dropdown-toggle" href="#" id="penangananDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fa fa-fw fa-archive"></i>
+                        <span class="nav-link-text">Penanganan</span>
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="penangananDropdown">
+                        <a class="dropdown-item" href="form_penanganan">Surat Penanganan</a>
+                        <a class="dropdown-item" href="form_jadwal">Jadwal Penanganan</a>
+                    </div>
+                </li>
 
                 <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Export">
                     <a class="nav-link" href="export">
@@ -288,9 +298,10 @@
                 <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Version">
                     <a class="nav-link" href="#VersionModal" data-toggle="modal" data-target="#VersionModal">
                         <i class="fa fa-fw fa-code"></i>
-                        <span class="nav-link-text">v-6.0</span>
+                        <span class="nav-link-text">v-1.0</span>
                     </a>
                 </li>
+            </ul>
 
             </ul>
 
@@ -419,7 +430,7 @@
                                     <!-- <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#ModalPenanganan<?php echo $key['id_laporan']; ?>">
                                         Penanganan
                                     </button> -->
-                                    <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#ModalHapus<?php echo $key['id_laporan']; ?>">
+                                    <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#ModalHapus<?php echo $key['id_laporan']; ?>">
                                         Hapus
                                     </button>
                                     
@@ -667,25 +678,29 @@
 
 <!-- Modal Hapus -->
 <div class="modal fade" id="ModalHapus<?php echo $key['id_laporan']; ?>" tabindex="-1" role="dialog">
-            <div class="modal-dialog modal-sm " role="document">
-                <div class="modal-content">
-                    <div class="modal-header ">
-                        <h5 class="modal-title text-center">Hapus Laporan</h5>
-                    </div>
-                    <div class="modal-body">
-                        <p class="text-center">Hapus Pengaduan</p>
-                        <p class="text-center">Dari <b><?php echo $key['nama_plp']; ?></b> ?</p>
-                    </div>
-                    <div class="modal-footer">
-                        <form method="post">
-                            <input type="hidden" name="id_laporan2" value="<?php echo $key['id_laporan']; ?>">
-                            <input type="submit" class="btn btn-danger btn-sm card-shadow-2" name="Hapus" value="Hapus">
-                            <button type="button" class="btn btn-close btn-sm card-shadow-2" data-dismiss="modal">Batal</button>
-                        </form>
-                    </div>
-                </div>
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Hapus Laporan</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p class="text-center">Apakah anda yakin ingin menghapus laporan ini?</p>
+                <p class="text-center">ID Laporan: <b><?php echo $key['id_laporan']; ?></b></p>
+                <p class="text-center">Pelapor: <b><?php echo $key['nama_plp']; ?></b></p>
+            </div>
+            <div class="modal-footer">
+                <form method="post">
+                    <input type="hidden" name="id_laporan" value="<?php echo $key['id_laporan']; ?>">
+                    <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Batal</button>
+                    <button type="submit" name="Hapus" class="btn btn-danger btn-sm">Hapus</button>
+                </form>
             </div>
         </div>
+    </div>
+</div>
        
     </tbody>
 </table>
