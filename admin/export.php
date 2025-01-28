@@ -69,6 +69,47 @@ $(document).ready(function() {
         ]
     });
 });
+function printAllTabs() {
+    const { jsPDF } = window.jspdf;
+
+    // Daftar tab dan judulnya
+    const tabs = [
+        { id: "laporan", title: "Laporan" },
+        { id: "penanganan", title: "Penanganan" },
+        { id: "tanggapan", title: "Tanggapan" },
+        { id: "jadwal-penanganan", title: "Jadwal Penanganan" },
+    ];
+
+    tabs.forEach((tab) => {
+        const table = document.querySelector(`#${tab.id} table`);
+        if (table) {
+            // Buat PDF untuk masing-masing tab
+            const doc = new jsPDF("landscape"); // Orientasi landscape untuk tabel yang lebar
+
+            // Tambahkan judul PDF
+            doc.text(`Export Data - ${tab.title}`, 14, 10);
+
+            // Konversi tabel ke PDF menggunakan AutoTable
+            doc.autoTable({
+                html: table,
+                startY: 20,
+                theme: "grid",
+                styles: {
+                    fontSize: 8,
+                    cellPadding: 2,
+                },
+                headStyles: { fillColor: [22, 160, 133] },
+            });
+
+            // Simpan file PDF
+            doc.save(`${tab.title}.pdf`);
+        } else {
+            console.warn(`Tabel di tab "${tab.title}" tidak ditemukan.`);
+        }
+    });
+
+    alert("Semua PDF berhasil dicetak!");
+}
     </script>
 
 </head>
@@ -76,7 +117,7 @@ $(document).ready(function() {
 <body class="fixed-nav sticky-footer" id="page-top">
     <!-- Navigation-->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="mainNav">
-        <a class="navbar-brand" href="index">SMP MUHAMMADIYAH 32 Jakarta</a>
+        <a class="navbar-brand" href="index">Pengaduan </a>
         <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -103,20 +144,31 @@ $(document).ready(function() {
                         <span class="nav-link-text">Dashboard</span>
                     </a>
                 </li>
+                <li class="nav-item dropdown" data-toggle="tooltip" data-placement="right" title="Penanganan">
+                    <a class="nav-link dropdown-toggle" href="#" id="penangananDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fa fa-fw fa-archive"></i>
+                        <span class="nav-link-text">Penanganan</span>
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="penangananDropdown">
+                        <a class="dropdown-item" href="form_penanganan">Surat Penanganan</a>
+                        <a class="dropdown-item" href="form_jadwal">Jadwal Penanganan</a>
+                    </div>
+                </li>
 
                 <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Export">
                     <a class="nav-link" href="export">
                         <i class="fa fa-fw fa-print"></i>
-                        <span class="nav-link-text">Ekspor</span>
+                        <span class="nav-link-text">Data Arsip</span>
                     </a>
                 </li>
 
                 <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Version">
                     <a class="nav-link" href="#VersionModal" data-toggle="modal" data-target="#VersionModal">
                         <i class="fa fa-fw fa-code"></i>
-                        <span class="nav-link-text">v-6.0</span>
+                        <span class="nav-link-text">v-1.0</span>
                     </a>
                 </li>
+            </ul>
 
             </ul>
             <ul class="navbar-nav sidenav-toggler">
@@ -170,7 +222,39 @@ $(document).ready(function() {
         </div>
     </nav>
 
+    <style>
+@media print {
+    @page {
+        size: A4 landscape; /* Orientasi landscape */
+        margin: 10mm;
+    }
+    body {
+        font-size: 12px; /* Ukuran teks lebih kecil */
+    }
+    table {
+        width: 100%; /* Pastikan tabel memenuhi halaman */
+        border-collapse: collapse;
+    }
+    th, td {
+        word-wrap: break-word; /* Pecah kata panjang */
+        padding: 5px;
+        font-size: 10px; /* Ukuran teks tabel lebih kecil */
+    }
+    .nav-tabs, .btn {
+        display: none; /* Sembunyikan elemen yang tidak perlu saat print */
+    }
+    table {
+    table-layout: fixed;
+    width: 100%; /* Tabel selalu penuh */
+}
+th, td {
+    font-size: 10px; /* Ukuran font lebih kecil */
+    text-align: left;
+    word-wrap: break-word; /* Pecah kata jika terlalu panjang */
+}
+}
 
+</style>
     <!-- Body -->
     <div class="content-wrapper">
         <div class="container-fluid">
@@ -182,8 +266,35 @@ $(document).ready(function() {
                 </li>
                 <li class="breadcrumb-item active"><?php echo $divisi; ?></li>
             </ol>
+            <div class="container my-4">
+        <h1 class="text-center mb-4">Export Data</h1>
 
-            <!-- DataTables Card-->
+        <!-- Tabs Navigation -->
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+    <li class="nav-item">
+        <a class="nav-link active" id="laporan-tab" data-toggle="tab" href="#laporan" role="tab">Laporan</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" id="penanganan-tab" data-toggle="tab" href="#penanganan" role="tab">Penanganan</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" id="tanggapan-tab" data-toggle="tab" href="#tanggapan" role="tab">Tanggapan</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" id="surat-tab" data-toggle="tab" href="#surat" role="tab">Surat Penanganan</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" id="jadwal-tab" data-toggle="tab" href="#jadwal" role="tab">Jadwal Penanganan</a>
+    </li>
+
+</ul>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4>Manajemen Laporan</h4>
+    <button onclick="printAllTabs()" class="btn btn-primary">Cetak Semua Tab</button>
+    <button onclick="window.print()" class="btn btn-primary">Cetak</button>
+    <button onclick="generatePDF()">Unduh PDF</button>
+</div>
+            <!-- DataTables Card
             <div class="card mb-3">
                 <div class="card-header">
                     <i class="fa fa-table"></i> Cetak Laporan Masuk
@@ -258,7 +369,7 @@ $(document).ready(function() {
                 <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
             </div>
         </div>
-        <!-- /.container-fluid-->
+        /.container-fluid
 
         <footer class="sticky-footer">
             <div class="container">
@@ -266,7 +377,7 @@ $(document).ready(function() {
                     <small>Copyright © SMP MUHAMMADIYAH 32 Jakarta</small>
                 </div>
             </div>
-        </footer>
+        </footer> -->
 
 
         <!-- Scroll to Top Button-->
@@ -274,7 +385,246 @@ $(document).ready(function() {
             <i class="fa fa-angle-up"></i>
         </a>
 
+  <!-- Tab Penanganan -->
+  <div class="tab-content" id="myTabContent">
+    <!-- Laporan Tab Content -->
+    <div id="laporan" class="tab-pane fade show active" role="tabpanel" aria-labelledby="laporan-tab">
+        <h3>Laporan</h3>
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                    <th>Nama Pelapor</th>
+                    <th>No HP Pelapor</th>
+                    <th>Kelas Pelapor</th>
+                    <th>Nama Korban</th>
+                    <th>No HP Korban</th>
+                    <th>Kelas Korban</th>
+                    <th>Nama Pelaku</th>
+                    <th>No HP Pelaku</th>
+                    <th>Tanggal Pengaduan</th>
+                    <th>Tanggal Kejadian</th>
+                    <th>Tempat Kejadian</th>
+                    <th>Kategori Kekerasan</th>
+                    <th>Subjek Pengaduan</th>
+                    <th>Kronologi Kejadian</th>
+                    <th>Bukti Kekerasan</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                <?php
+                                // Ambil semua record dari tabel laporan
+                              
 
+                                $sql = "SELECT * FROM laporan ORDER BY id_laporan DESC";
+                                $statement = $db->query($sql);
+                                
+                                // Ambil data
+                                $result = $statement->fetchAll(PDO::FETCH_ASSOC); // Mengambil semua data dalam bentuk array asosiatif
+                                
+                                // Jika ada data
+                                if (!empty($result)) {
+                                    foreach ($result as $key) {
+                                        $tanggal_pengaduan = !empty($key['tanggal_pengaduan']) ? date('d/m/Y', strtotime($key['tanggal_pengaduan'])) : '-';
+                                        $tanggal_kejadian = !empty($key['tanggal_kejadian']) ? date('d/m/Y', strtotime($key['tanggal_kejadian'])) : '-';
+                                    }
+                                }
+                                    ?>
+
+                                
+        
+                                   
+                                     <tr>
+            <td><?php echo $key['nama_plp']; ?></td>
+            <td><?php echo $key['no_hp_plp']; ?></td>
+            <td><?php echo $key['kls_plp']; ?></td>
+            <td><?php echo $key['nama_krb']; ?></td>
+            <td><?php echo $key['no_hp_krb']; ?></td>
+            <td><?php echo $key['kls_krb']; ?></td>
+            <td><?php echo $key['nama_plk']; ?></td>
+            <td><?php echo $key['no_hp_plk']; ?></td>
+            <td><?php echo $tanggal_pengaduan; ?></td>
+            <td><?php echo $tanggal_kejadian; ?></td>
+            <td><?php echo $key['tempat_kejadian']; ?></td>
+            <td><?php echo $key['kategori_kekerasan']; ?></td>
+            <td><?php echo $key['subjek_pengaduan']; ?></td>
+            <td><?php echo $key['kronologi_kejadian']; ?></td>
+            <td>
+                        <?php 
+                        $bukti = $key['bukti_kekerasan']; // Nama file dari database
+                        $file_path = "images/$bukti"; // Jalur relatif untuk browser
+
+                        if (!empty($bukti) && file_exists(__DIR__ . "/images/$bukti")) {
+                            $file_extension = strtolower(pathinfo($bukti, PATHINFO_EXTENSION));
+
+                            // Jika file adalah gambar
+                            if (in_array($file_extension, ['jpg', 'jpeg', 'png'])) {
+                                echo "<a href='$file_path' target='_blank'>
+                                        <img src='$file_path' alt='Bukti Kekerasan' style='width: 100px; height: auto;'>
+                                    </a>";
+                            } 
+                            // Jika file adalah PDF
+                            elseif ($file_extension === 'pdf') {
+                                echo "<a href='$file_path' target='_blank'>Lihat PDF</a>";
+                            }
+                        } else {
+                            echo "Tidak ada bukti";
+                        }
+                        ?>
+                    </td>
+            <td><?php echo $key['status']; ?></td> <!-- Status ditampilkan tanpa gaya -->
+        </tr>
+                                    <?php
+                              
+                                ?>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Penanganan Tab Content -->
+    <div id="penanganan" class="tab-pane fade" role="tabpanel" aria-labelledby="penanganan-tab">
+        <h3>Penanganan</h3>
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                                    <th>ID Surat Penanganan</th>
+                                    <th>Tanggal Surat</th>
+                                    <th>Nomor Surat</th>
+                                    <th>Jenis Surat</th>
+                                    <th>Nama Pendamping</th>
+                                    <th>File Surat</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                                // Query database
+                                $sql = "SELECT * FROM srt_penanganan ORDER BY id_srt_penanganan DESC";
+                                $statement = $db->query($sql);
+
+                                // Ambil data
+                                $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+                                // Tampilkan data
+                                if (!empty($result)) {
+                                    foreach ($result as $row) {
+                                        $tanggal_srt = !empty($row['tanggal_srt']) ? date('d/m/Y', $row['tanggal_srt']) : '-';
+                                        ?>
+                                        <tr>
+                                            <td><?php echo $row['id_srt_penanganan']; ?></td>
+                                            <td><?php echo $tanggal_srt; ?></td>
+                                            <td><?php echo $row['nomor_surat']; ?></td>
+                                            <td><?php echo $row['jenis_surat']; ?></td>
+                                            <td><?php echo $row['nama_pendamping_srt']; ?></td>
+                                            <td>
+                                                <?php 
+                                                $file_surat = $row['file_surat'];
+                                                $file_path = "images/$file_surat"; // Jalur file relatif
+                                                
+                                                if (!empty($file_surat) && file_exists($file_path)) {
+                                                    $file_extension = strtolower(pathinfo($file_surat, PATHINFO_EXTENSION));
+
+                                                    // Jika file adalah gambar
+                                                    if (in_array($file_extension, ['jpg', 'jpeg', 'png'])) {
+                                                        echo "<a href='$file_path' target='_blank'>
+                                                                <img src='$file_path' alt='File Surat' style='width: 100px; height: auto;'>
+                                                            </a>";
+                                                    }
+                                                    // Jika file adalah PDF
+                                                    elseif ($file_extension === 'pdf') {
+                                                        echo "<a href='$file_path' target='_blank'>Lihat PDF</a>";
+                                                    }
+                                                } else {
+                                                    echo "Tidak ada bukti";
+                                                }
+                                            }
+                                        }
+                                                ?>
+                                                
+                                            </td>
+                                            <tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Tanggapan Tab Content -->
+    <div id="tanggapan" class="tab-pane fade" role="tabpanel" aria-labelledby="tanggapan-tab">
+        <h3>Penanganan</h3>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>ID Surat Penanganan</th>
+                <th>Tanggal Surat</th>
+                <th>Nomor Surat</th>
+                <th>Jenis Surat</th>
+                <th>Nama Pendamping</th>
+                <th>File Surat</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php
+            // Query database
+            $sql = "SELECT * FROM jdwl_penanganan ORDER BY id_jadwal DESC";
+            $statement = $db->query($sql);
+
+            // Ambil data
+            $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+            // Tampilkan data
+            if (!empty($result)) {
+                foreach ($result as $row) {
+                    // Format tanggal
+                    $tanggal_srt = !empty($row['tanggal_penanganan']) ? date('d/m/Y', strtotime($row['tanggal_penanganan'])) : '-';
+                    ?>
+                    <tr>
+                        <td><?php echo htmlspecialchars($row['id_jadwal']); ?></td>
+                        <td><?php echo htmlspecialchars($tanggal_srt); ?></td>
+                        <td><?php echo htmlspecialchars($row['lokasi_penanganan']); ?></td>
+                        <td><?php echo htmlspecialchars($row['unggah_surat_rujukan']); ?></td>
+                        
+                        <td>
+                            <?php
+                            $file_surat = $row['file_surat'];
+                            $file_path = "uploads/$file_surat"; // Pastikan folder "uploads" ada dan berisi file
+
+                            if (!empty($file_surat) && file_exists($file_path)) {
+                                $file_extension = strtolower(pathinfo($file_surat, PATHINFO_EXTENSION));
+
+                                // Jika file adalah gambar
+                                if (in_array($file_extension, ['jpg', 'jpeg', 'png'])) {
+                                    echo "<a href='$file_path' target='_blank'>
+                                            <img src='$file_path' alt='File Surat' style='width: 100px; height: auto;'>
+                                          </a>";
+                                }
+                                // Jika file adalah PDF
+                                elseif ($file_extension === 'pdf') {
+                                    echo "<a href='$file_path' target='_blank'>Lihat PDF</a>";
+                                }
+                            } else {
+                                echo "Tidak ada bukti";
+                            }
+                            ?>
+                        </td>
+                    </tr>
+                    <?php
+                }
+            } else {
+                echo "<tr><td colspan='6'>Tidak ada data tersedia</td></tr>";
+            }
+            ?>
+        </tbody>
+    </table>
+</div>
+
+    <!-- DataTables Initialization -->
+    <script>
+        $(document).ready(function() {
+            $('#laporanTable').DataTable();
+        });
+    </script>
+</body>
+</html>
         <!-- Logout Modal-->
         <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
@@ -324,10 +674,12 @@ $(document).ready(function() {
         <script src="js/admin.js"></script>
         <!-- Custom scripts for this page-->
         <script src="js/admin-datatables.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
 
     </div>
     <!-- /.content-wrapper-->
-
+    
 </body>
 
 </html>

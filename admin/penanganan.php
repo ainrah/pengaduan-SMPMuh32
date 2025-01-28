@@ -55,17 +55,21 @@
                         <span class="nav-link-text">Dashboard</span>
                     </a>
                 </li>
-                <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Penanganan">
-                    <a class="nav-link" href="penanganan">
+                <li class="nav-item dropdown" data-toggle="tooltip" data-placement="right" title="Penanganan">
+                    <a class="nav-link dropdown-toggle" href="#" id="penangananDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i class="fa fa-fw fa-archive"></i>
                         <span class="nav-link-text">Penanganan</span>
                     </a>
+                    <div class="dropdown-menu" aria-labelledby="penangananDropdown">
+                        <a class="dropdown-item" href="form_penanganan">Surat Penanganan</a>
+                        <a class="dropdown-item" href="form_jadwal">Jadwal Penanganan</a>
+                    </div>
                 </li>
 
                 <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Export">
                     <a class="nav-link" href="export">
                         <i class="fa fa-fw fa-print"></i>
-                        <span class="nav-link-text">Ekspor</span>
+                        <span class="nav-link-text">Data Arsip</span>
                     </a>
                 </li>
 
@@ -181,7 +185,7 @@
                 <tbody>
                 <?php
                 // Query database
-                $sql = "SELECT * FROM penanganan ORDER BY id_penaganan DESC LIMIT 1";
+                $sql = "SELECT * FROM penanganan ORDER BY id_penanganan DESC ";
                 $statement = $db->query($sql);
 
                 // Ambil data
@@ -193,13 +197,13 @@
                         $tanggal_penanganan = !empty($key['tanggal_penanganan']) ? date('d/m/Y', strtotime($key['tanggal_penanganan'])) : '-';
                         ?>
                         <tr>
-                            <td><?php echo $key['id_penaganan']; ?></td>
+                            <td><?php echo $key['id_penanganan']; ?></td>
                             <td><?php echo $key['Jenis_penanganan']; ?></td>
                             <td><?php echo $tanggal_penanganan; ?></td>
                             <td><?php echo $key['alamat_penanganan']; ?></td>
                             <td><?php echo $key['nama_pendamping']; ?></td>
                             <td><?php echo $key['nomor_hp_pendamping']; ?></td>
-                            <td><?php echo $key['id_laporan']; ?></td>
+                            <td><?php echo $key['id_laporan2']; ?></td>
                         </tr>
                         <?php
                     }

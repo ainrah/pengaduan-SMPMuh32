@@ -6,9 +6,150 @@
     // global var
     global $nomor, $foundreply;
     // hapus Balasan laporan berdasarkan id Balasan laporan
+
+
+    if (isset($_POST['Hapus'])) {
+        $id_hapus = $_POST['id_laporan'];
+    
+        // Menyiapkan statement DELETE
+        $statement = $db->prepare("DELETE FROM `laporan` WHERE `id_laporan` = :id_laporan");
+        $statement->bindParam(':id_laporan', $id_hapus, PDO::PARAM_INT);
+        $statement->execute();
+    }
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        if (isset($_POST['Balas'])) {
+            // Insert tabel tanggapan
+            $id_laporan1 = $_POST['id_laporan1'];
+            $isi_tanggapan = $_POST['isi_tanggapan'];
+            $admin = "Admin";
+            $cerita_real_krb = $_POST['cerita_real_krb'];
+            $kasus_penanganan = $_POST['kasus_penanganan'];
+            $nama_pendamping = $_POST['nama_pendamping'];
+
+            $sql = "INSERT INTO `tanggapan` 
+                    (`id_tanggapan`, `id_laporan1`, `admin`, `isi_tanggapan`, `tanggal_tanggapan`, `cerita_real_krb`, `kasus_penanganan`, `nama_pendamping`) 
+                    VALUES 
+                    (NULL, :id_laporan1, :admin, :isi_tanggapan, CURRENT_TIMESTAMP, :cerita_real_krb, :kasus_penanganan, :nama_pendamping)";
+
+            $stmt = $db->prepare($sql);
+            $stmt->bindValue(':id_laporan1', $id_laporan1, PDO::PARAM_STR);
+            $stmt->bindValue(':admin', $admin, PDO::PARAM_STR);
+            $stmt->bindValue(':isi_tanggapan', htmlspecialchars($isi_tanggapan), PDO::PARAM_STR);
+            $stmt->bindValue(':cerita_real_krb', htmlspecialchars($cerita_real_krb), PDO::PARAM_STR);
+            $stmt->bindValue(':kasus_penanganan', htmlspecialchars($kasus_penanganan), PDO::PARAM_STR);
+            $stmt->bindValue(':nama_pendamping', htmlspecialchars($nama_pendamping), PDO::PARAM_STR);
+            $stmt->execute();
+
+            // Jika ada tanggapan, update status laporan menjadi 'Ditanggapi'
+            $sql = "UPDATE `laporan` SET `status` = 'Ditanggapi' WHERE `id_laporan1` = :id_laporan1";
+            $stmt = $db->prepare($sql);
+            $stmt->bindValue(':id_laporan1', $id_laporan1, PDO::PARAM_STR);
+            $stmt->execute();
+            // Redirect ke page tables
+            // header("Location: tables");
+        }
+
+        if (isset($_POST['submit_penanganan'])) {
+            // Ambil data dari form
+            $id_laporan1 = $_POST['id_laporan1'];
+            $jenis_penanganan = $_POST['jenis_penanganan'];
+
+            // Query untuk memasukkan data penanganan ke database
+            $sql = "INSERT INTO `penanganan` (`id_penanganan`, `id_laporan1`, `jenis_penanganan`, `tanggal_penanganan`) 
+                    VALUES (NULL, :id_laporan1, :jenis_penanganan, CURRENT_TIMESTAMP)";
+            
+            $stmt = $db->prepare($sql);
+            $stmt->bindValue(':id_laporan1', $id_laporan1, PDO::PARAM_STR);
+            $stmt->bindValue(':jenis_penanganan', htmlspecialchars($jenis_penanganan), PDO::PARAM_STR);
+            $stmt->execute();
+
+            // Redirect ke page tables
+            // header("Location: tables");
+        }
+    }
+ 
+    
+        if (isset($_POST['submit_penanganan'])) {
+            // Ambil data dari form
+            $id_laporan1 = $_POST['id_laporan1'];
+            $jenis_penanganan = $_POST['jenis_penanganan'];
+    
+            // Query untuk memasukkan data penanganan ke database
+            $sql = "INSERT INTO `penanganan` (`id_penanganan`, `id_laporan1`, `jenis_penanganan`, `tanggal_penanganan`) 
+                    VALUES (NULL, :id_laporan1, :jenis_penanganan, CURRENT_TIMESTAMP)";
+            
+            $stmt = $db->prepare($sql);
+            $stmt->bindValue(':id_laporan1', $id_laporan1, PDO::PARAM_STR);
+            $stmt->bindValue(':jenis_penanganan', htmlspecialchars($jenis_penanganan), PDO::PARAM_STR);
+            $stmt->execute();
+    
+            // Redirect ke page tables
+            // header("Location: tables");
+        }
     
 
-?>
+    if (isset($_POST['submit_penanganan'])) {
+        // Ambil data dari form
+        $id_laporan = intval($_POST['id_laporan']);
+        $jenis_penanganan = $_POST['jenis_penanganan'];
+        $tanggal_penanganan = $_POST['tanggal_penanganan'];
+        $alamat_penanganan = $_POST['alamat_penanganan'];
+        $nama_pendamping = $_POST['nama_pendamping'];
+        $nomor_hp_pendamping = $_POST['nomor_hp_pendamping'];
+        
+        // Format tanggal
+        $tanggal = date('Y-m-d'); // Menggunakan tanggal saat ini
+        
+        try {
+            // Ambil nomor urut terakhir berdasarkan tanggal yang sama
+            $sql = "SELECT MAX(CAST(SUBSTRING(id_penanganan, 15) AS UNSIGNED)) AS last_order
+                    FROM penanganan
+                    WHERE tanggal_penanganan = :tanggal";
+            
+            $stmt = $db->prepare($sql);
+            $stmt->bindValue(':tanggal', $tanggal, PDO::PARAM_STR);
+            $stmt->execute();
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            $last_order = $row['last_order'] ? $row['last_order'] + 1 : 1; // Jika tidak ada, mulai dari 1
+    
+            // Format id_penanganan
+            $id_penanganan = 'IDP-' . $tanggal . '-' . str_pad($last_order, 6, '0', STR_PAD_LEFT);
+    
+            // Insert data ke tabel penanganan
+            $sql = "INSERT INTO `penanganan` 
+                    (`id_penanganan`, `id_laporan`, `jenis_penanganan`, `tanggal_penanganan`, 
+                     `alamat_penanganan`, `nama_pendamping`, `nomor_hp_pendamping`) 
+                    VALUES 
+                    (:id_penanganan, :id_laporan, :jenis_penanganan, :tanggal_penanganan, 
+                     :alamat_penanganan, :nama_pendamping, :nomor_hp_pendamping)";
+            
+            $stmt = $db->prepare($sql);
+            $stmt->bindValue(':id_penanganan', $id_penanganan, PDO::PARAM_STR);
+            $stmt->bindValue(':id_laporan', $id_laporan, PDO::PARAM_INT);
+            $stmt->bindValue(':jenis_penanganan', htmlspecialchars($jenis_penanganan), PDO::PARAM_STR);
+            $stmt->bindValue(':tanggal_penanganan', $tanggal_penanganan, PDO::PARAM_STR);
+            $stmt->bindValue(':alamat_penanganan', htmlspecialchars($alamat_penanganan), PDO::PARAM_STR);
+            $stmt->bindValue(':nama_pendamping', htmlspecialchars($nama_pendamping), PDO::PARAM_STR);
+            $stmt->bindValue(':nomor_hp_pendamping', htmlspecialchars($nomor_hp_pendamping), PDO::PARAM_STR);
+            $stmt->execute();
+    
+            // Perbarui status laporan menjadi 'Ditangani'
+            $sql = "UPDATE `laporan` SET `status` = 'Ditangani' WHERE `id_laporan` = :id_laporan";
+            $stmt = $db->prepare($sql);
+            $stmt->bindValue(':id_laporan', $id_laporan, PDO::PARAM_INT);
+            $stmt->execute();
+    
+            // Redirect ke halaman lain atau tampilkan pesan sukses
+            header("Location: penanganan.php?success=1");
+            exit;
+    
+        } catch (PDOException $e) {
+            // Tangani error jika terjadi masalah
+            echo "Error: " . $e->getMessage();
+        }
+    }
+  
+?>    
 <!DOCTYPE html>
 <html lang="en">
 
@@ -19,7 +160,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="shortcut icon" href="images/favicon.ico">
-    <title>Table - Pengaduan Dispenduk Bangkalan</title>
+    <title>Table - SMP MUHAMMADIYAH 32 Jakarta</title>
     <!-- Bootstrap core CSS-->
     <link href="vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
     
@@ -34,7 +175,7 @@
 <body class="fixed-nav sticky-footer" id="page-top">
     <!-- Navigation-->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="mainNav">
-        <a class="navbar-brand" href="index">Dispenduk Bangkalan</a>
+        <a class="navbar-brand" href="index">SMP MUHAMMADIYAH 32 Jakarta</a>
         <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -151,6 +292,7 @@
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
+                            <th>ID</th>
                             <th>Nama Pelapor</th>
                             <th>No HP Pelapor</th>
                             <th>Kelas Pelapor</th>
@@ -167,6 +309,7 @@
                             <th>Kronologi Kejadian</th>
                             <th>Bukti Kekerasan</th>
                             <th>Status</th>
+                            <th>Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -204,19 +347,23 @@
                                 <td><?php echo $key['kategori_kekerasan']; ?></td>
                                 <td><?php echo $key['subjek_pengaduan']; ?></td>
                                 <td><?php echo $key['kronologi_kejadian']; ?></td>
+                                <td><?php echo $key['bukti_kekerasan']; ?></td>
+                                <td><?php echo $key['status']; ?></td>
                                 <td class="td-no-border">
-            <button type="button" class="btn btn-primary btn-sm btn-custom card-shadow-2" data-bs-toggle="modal" data-bs-target="#ModalDetail<?php echo $key['id_laporan']; ?>">
-                Detail
+                    
+                 <button type="button" class="btn btn-primary-custom btn-sm btn-custom card-shadow-2" data-toggle="modal" data-target="#ModalPenanganan<?php echo $key['id_laporan']; ?>">
+                         Penanganan
+                </button>
+                
+                </td>
+        <td class="td-no-border">
+            <button type="button" class="btn btn-primary-custom btn-sm btn-custom card-shadow-2" data-toggle="modal" data-target="#ModalBalas<?php echo $key['id_laporan']; ?>">
+             Validasi
             </button>
         </td>
         <td class="td-no-border">
-            <button type="button" class="btn btn-primary-custom btn-sm btn-custom card-shadow-2" data-bs-toggle="modal" data-bs-target="#ModalBalas<?php echo $key['id_laporan']; ?>">
-                Balas
-            </button>
-        </td>
-        <td class="td-no-border">
-            <button type="button" class="btn btn-danger btn-sm btn-custom card-shadow-2" data-bs-toggle="modal" data-bs-target="#ModalHapus<?php echo $key['id_laporan']; ?>">
-                Hapus
+            <button type="button" class="btn btn-danger btn-sm btn-custom card-shadow-2" data-toggle="modal" data-target="#ModalHapus<?php echo $key['id_laporan']; ?>">
+                 Hapus
             </button>
         </td>
 <?php
@@ -233,36 +380,40 @@
 
         <!-- Isi masing2 modal, detail, balas dan hapus -->
       <!-- Modal Tanggapan -->
-<div class="modal fade" id="modalTanggapan" tabindex="-1" aria-labelledby="modalTanggapanLabel" aria-hidden="true">
-    <div class="modal-dialog">
+      <div class="modal fade" id="ModalBalas<?php echo $key['id_laporan1']; ?>" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+    <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="modalTanggapanLabel">Tambah Tanggapan</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h5 class="modal-title">Balas Laporan</h5>
             </div>
-            <div class="modal-body">
-                <form id="formTanggapan">
-                    <div class="mb-3">
-                        <label for="admin" class="form-label">Admin</label>
-                        <input type="text" class="form-control" id="admin" required>
+            <div class="modal-body">    
+                <form method="post" action="path/to/your/handler.php">
+                    <div class="form-group">
+                        <p><b>Nama Pelapor:</b></p>
+                        <?php echo $key['nama_plp']; ?>
+                        <hr>
                     </div>
-                    <div class="mb-3">
-                        <label for="isiTanggapan" class="form-label">Isi Tanggapan</label>
-                        <textarea class="form-control" id="isiTanggapan" rows="3" required></textarea>
+                    <div class="form-group">
+                        <p><b>Isi Laporan :</b></p>
+                        <p>"<?php echo $key['kronologi_kejadian']; ?>"</p>
+                        <hr>
                     </div>
-                    <div class="mb-3">
-                        <label for="ceritaRealKrb" class="form-label">Cerita Real Korban</label>
-                        <textarea class="form-control" id="ceritaRealKrb" rows="3"></textarea>
+                    <div class="form-group">
+                        <p><b>Tanggapan :</b></p>
+                        <textarea class="form-control" name="isi_tanggapan" placeholder="Isi Tanggapan" required></textarea>
                     </div>
-                    <div class="mb-3">
-                        <label for="kasusPenanganan" class="form-label">Kasus Penanganan</label>
-                        <input type="text" class="form-control" id="kasusPenanganan">
+                    <div class="form-group">
+                        <input type="hidden" name="id_laporan1" value="<?php echo $key['id_laporan1']; ?>">
                     </div>
-                    <div class="mb-3">
-                        <label for="namaPendamping" class="form-label">Nama Pendamping</label>
-                        <input type="text" class="form-control" id="namaPendamping">
+                    <div class="form-group">
+                        <p><b>Cerita Real KRB :</b></p>
+                        <textarea class="form-control" name="cerita_real_krb" placeholder="Isi Tanggapan" required></textarea>
                     </div>
-                    <button type="submit" class="btn btn-primary">Simpan</button>
+                    <div class="form-group">
+                        <p><b>Kasus Penanganan :</b></p>
+                        <textarea class="form-control" name="kasus_penanganan" placeholder="Isi Tanggapan" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
                 </form>
             </div>
         </div>
@@ -285,25 +436,91 @@
         </div>
     </div>
 </div>
-
-<!-- Modal Hapus -->
-<div class="modal fade" id="modalHapus" tabindex="-1" aria-labelledby="modalHapusLabel" aria-hidden="true">
-    <div class="modal-dialog">
+<!-- Modal Penanganan -->
+<div class="modal fade" id="ModalPenanganan<?php echo $key['id_laporan']; ?>" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+    <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="modalHapusLabel">Hapus Laporan</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h5 class="modal-title">Tambah Penanganan</h5>
             </div>
             <div class="modal-body">
-                <p>Apakah Anda yakin ingin menghapus laporan ini?</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                <button type="button" class="btn btn-danger" id="btnHapus">Hapus</button>
+                <form method="post">
+                    <!-- ID Laporan -->
+                    <div class="form-group">
+                        <label for="id_penanganan"><b>ID Penanganan:</b></label>
+                        <input type="text" class="form-control" name="id_penanganan" value="<?php echo isset($id_penanganan) ? $id_penanganan : ''; ?>" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_laporan"><b>ID Laporan:</b></label>
+                        <input type="text" class="form-control" name="id_laporan" value="<?php echo $key['id_laporan']; ?>" readonly>
+                    </div>
+
+                    <!-- Jenis Penanganan -->
+                    <div class="form-group">
+                        <label for="jenis_penanganan"><b>Jenis Penanganan:</b></label>
+                        <textarea class="form-control" name="jenis_penanganan" placeholder="Jenis Penanganan" required></textarea>
+                    </div>
+                  
+                    <!-- Tanggal Penanganan -->
+                    <div class="form-group">
+                        <label for="tanggal_penanganan"><b>Tanggal Penanganan:</b></label>
+                        <input type="date" class="form-control" name="tanggal_penanganan" required>
+                    </div>
+
+                    <!-- Alamat Penanganan -->
+                    <div class="form-group">
+                        <label for="alamat_penanganan"><b>Alamat Penanganan:</b></label>
+                        <textarea class="form-control" name="alamat_penanganan" placeholder="Alamat Penanganan" required></textarea>
+                    </div>
+
+                    <!-- Nama Pendamping -->
+                    <div class="form-group">
+                        <label for="nama_pendamping"><b>Nama Pendamping:</b></label>
+                        <input type="text" class="form-control" name="nama_pendamping" placeholder="Nama Pendamping" required>
+                    </div>
+
+                    <!-- Nomor HP Pendamping -->
+                    <div class="form-group">
+                        <label for="nomor_hp_pendamping"><b>Nomor HP Pendamping:</b></label>
+                        <input type="text" class="form-control" name="nomor_hp_pendamping" placeholder="Nomor HP Pendamping" required>
+                    </div>
+
+                    <!-- Penanganan -->
+                   
+
+                    <!-- Submit -->
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary-custom card-shadow-2 btn-sm" name="submit_penanganan">Simpan</button>
+                        <button type="button" class="btn btn-close btn-sm card-shadow-2" data-dismiss="modal">Batal</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Modal Hapus -->
+<div class="modal fade" id="ModalHapus<?php echo $key['id_laporan']; ?>" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-sm " role="document">
+                <div class="modal-content">
+                    <div class="modal-header ">
+                        <h5 class="modal-title text-center">Hapus Laporan</h5>
+                    </div>
+                    <div class="modal-body">
+                        <p class="text-center">Hapus Pengaduan</p>
+                        <p class="text-center">Dari <b><?php echo $key['nama_plp']; ?></b> ?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <form method="post">
+                            <input type="hidden" name="id_laporan" value="<?php echo $key['id_laporan']; ?>">
+                            <input type="submit" class="btn btn-danger btn-sm card-shadow-2" name="Hapus" value="Hapus">
+                            <button type="button" class="btn btn-close btn-sm card-shadow-2" data-dismiss="modal">Batal</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- ./Modal Hapus-->
         <?php
@@ -313,7 +530,7 @@
         <footer class="sticky-footer">
             <div class="container">
                 <div class="text-center">
-                    <small>Copyright © Dispenduk Bangkalan 2018</small>
+                    <small>Copyright © SMP MUHAMMADIYAH 32 Jakarta</small>
                 </div>
             </div>
         </footer>
@@ -355,7 +572,7 @@
                     </div>
                     <div class="modal-body">
                         <h5 style="text-align : center;">V-6.0</h5>
-                        <p style="text-align : center;">Copyright © Dispenduk Bangkalan 2018</p>
+                        <p style="text-align : center;">Copyright © SMP MUHAMMADIYAH 32 Jakarta</p>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-close card-shadow-2 btn-sm" data-dismiss="modal">Tutup</button>

@@ -17,14 +17,51 @@
             $total_laporan_masuk = $row['COUNT(*)'];
         }
 
-        foreach($db->query("SELECT COUNT(*) FROM laporan WHERE status = \"Ditanggapi\"") as $row) {
+        foreach($db->query("SELECT COUNT(*) FROM laporan WHERE status = \"Divalidasi\"") as $row) {
             $total_laporan_ditanggapi = $row['COUNT(*)'];
         }
 
         foreach($db->query("SELECT COUNT(*) FROM laporan WHERE status = \"Menunggu\"") as $row) {
             $total_laporan_menunggu = $row['COUNT(*)'];
         }
+    } 
+    if ($id_admin > 0) {
+        // Menghitung total data dari tabel srt_laporan
+        foreach ($db->query("SELECT COUNT(*) FROM srt_penanganan") as $row) {
+            $total_srt_laporan = $row['COUNT(*)'];
+        }
+    
+        // Menghitung total data dari tabel jdwl_penanganan
+        foreach ($db->query("SELECT COUNT(*) FROM jdwl_penanganan") as $row) {
+            $total_jdwl_penanganan = $row['COUNT(*)'];
+        }
+    } else {
+        // Menghitung total data dari tabel srt_laporan
+        foreach ($db->query("SELECT COUNT(*) FROM srt_penanganan") as $row) {
+            $total_srt_laporan = $row['COUNT(*)'];
+        }
+    
+        // Menghitung total data dari tabel jdwl_penanganan
+        foreach ($db->query("SELECT COUNT(*) FROM jdwl_penanganan") as $row) {
+            $total_jdwl_penanganan = $row['COUNT(*)'];
+        }
     }
+    // Ambil nama gambar dari parameter URL
+if (isset($_GET['image'])) {
+    $image = $_GET['image'];
+    $imagePath = "C:/xampp/htdocs/PengaduanSMPM32/images/" . $image;
+
+    // Cek jika gambar ada di folder images
+    if (file_exists($imagePath)) {
+        // Tampilkan gambar
+        header('Content-Type: C:/xampp/htdocs/PengaduanSMPM32/images/'); // Sesuaikan dengan tipe gambar (png, jpg, gif, dll.)
+        readfile($imagePath);
+        exit;
+    } else {
+        echo "Gambar tidak ditemukan.";
+    }
+}
+
 
  ?>
 <!DOCTYPE html>
@@ -46,6 +83,10 @@
     <link href="vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
     <!-- Custom styles for this template-->
     <link href="css/admin.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap JS (popper.js and bootstrap.js required) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 </head>
 
 <body class="fixed-nav sticky-footer" id="page-top">
@@ -78,17 +119,21 @@
                         <span class="nav-link-text">Dashboard</span>
                     </a>
                 </li>
-                <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Penanganan">
-                    <a class="nav-link" href="penanganan">
+                <li class="nav-item dropdown" data-toggle="tooltip" data-placement="right" title="Penanganan">
+                    <a class="nav-link dropdown-toggle" href="#" id="penangananDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i class="fa fa-fw fa-archive"></i>
                         <span class="nav-link-text">Penanganan</span>
                     </a>
+                    <div class="dropdown-menu" aria-labelledby="penangananDropdown">
+                        <a class="dropdown-item" href="form_penanganan">Surat Penanganan</a>
+                        <a class="dropdown-item" href="form_jadwal">Jadwal Penanganan</a>
+                    </div>
                 </li>
 
                 <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Export">
                     <a class="nav-link" href="export">
                         <i class="fa fa-fw fa-print"></i>
-                        <span class="nav-link-text">Ekspor</span>
+                        <span class="nav-link-text">Data Arsip</span>
                     </a>
                 </li>
 
@@ -165,7 +210,7 @@
             <!-- Icon Cards-->
             <div class="row">
 
-                <div class="col-xl-3 col-sm-6 mb-3">
+            <div class="col-xl-2 col-sm-1 mb-1">
                     <div class="card text-white bg-primary o-hidden h-100">
                         <div class="card-body">
                             <div class="card-body-icon">
@@ -182,7 +227,7 @@
                     </div>
                 </div>
 
-                <div class="col-xl-3 col-sm-6 mb-3">
+                <div class="col-xl-2 col-sm-1 mb-1">
                     <div class="card text-white bg-danger o-hidden h-100">
                         <div class="card-body">
                             <div class="card-body-icon">
@@ -199,15 +244,15 @@
                     </div>
                 </div>
 
-                <div class="col-xl-3 col-sm-6 mb-3">
+                <div class="col-xl-2 col-sm-1 mb-1">
                     <div class="card text-white bg-success o-hidden h-100">
                         <div class="card-body">
                             <div class="card-body-icon">
                                 <i class="fa fa-fw fa-check-square"></i>
                             </div>
-                            <div class="mr-5"><?php echo $total_laporan_ditanggapi; ?> Sudah Validasi</div>
+                            <div class="mr-5"><?php echo $total_laporan_ditanggapi; ?> Belum Di Tanggapi</div>
                         </div>
-                        <a class="card-footer text-white clearfix small z-1" href="tables">
+                        <a class="card-footer text-white clearfix small z-1" href="tablestanggapi">
                             <span class="float-left">Sudah Validasi</span>
                             <span class="float-right">
                                 <i class="fa fa-angle-right"></i>
@@ -215,7 +260,59 @@
                         </a>
                     </div>
                 </div>
-
+                  <div class="col-xl-2 col-sm-1 mb-1">
+                    <div class="card text-white bg-warning o-hidden h-100">
+                        <div class="card-body">
+                        
+                            <div class="card-body-icon">
+                                <i class="fa fa-fw fa-check-square"></i>
+                            </div>
+                            <div class="mr-5"><?php echo $total_srt_laporan; ?> Total Surat</div>
+                        </div>
+                        <a class="card-footer text-white clearfix small z-1" href="form_penanganan">
+                            <span class="float-left">Lihat Form Surat</span>
+                            <span class="float-right">
+                                <i class="fa fa-angle-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                </div>
+                </div>
+               
+            <!-- <div class="col-xl-2 col-sm-6 mb-3">
+                <div class="card text-white bg-warning o-hidden h-100">
+                    <div class="card-body">
+                        <div class="card-body-icon">
+                            <i class="fa fa-fw fa-print"></i>
+                        </div>
+                        <div class="mr-5">Print</div>
+                    </div>
+                   <a class="card-footer text-white clearfix small z-1 print-button" onclick="printTable()">
+                        <span class="float-left">Print Table</span>
+                        <span class="float-right">
+                            <i class="fa fa-angle-right"></i>
+                        </span>
+                    </button>
+                    </a>
+                </div>
+            </div>
+            <div class="col-xl-2 col-sm-6 mb-3">
+                <div class="card text-white bg-warning o-hidden h-100">
+                    <div class="card-body">
+                        <div class="card-body-icon">
+                            <i class="fa fa-fw fa-print"></i>
+                        </div>
+                        <div class="mr-5">Print</div>
+                    </div>
+                   <a class="card-footer text-white clearfix small z-1 print-button" onclick="printTable()">
+                        <span class="float-left">Print Table</span>
+                        <span class="float-right">
+                            <i class="fa fa-angle-right"></i>
+                        </span>
+                    </button>
+                    </a>
+                </div> -->
+            <!-- </div> -->
                 <!-- <div class="col-xl-3 col-sm-6 mb-3">
                     <div class="card text-white bg-warning o-hidden h-100">
                         <div class="card-body">
@@ -233,9 +330,9 @@
                     </div>
                 </div> -->
 
-            </div>
+            <!-- </div> -->
             <!-- ./Icon Cards-->
-
+            
             <!-- Example DataTables Card-->
             <div class="card mb-3">
                 <div class="card-header">
@@ -267,7 +364,7 @@
             <tbody>
             <?php
 // Query database
-$sql = "SELECT * FROM laporan ORDER BY id_laporan DESC LIMIT 1";
+$sql = "SELECT * FROM laporan ORDER BY id_laporan DESC";
 $statement = $db->query($sql);
 
 // Ambil data
@@ -278,41 +375,55 @@ if (!empty($result)) {
     foreach ($result as $key) {
         $tanggal_pengaduan = !empty($key['tanggal_pengaduan']) ? date('d/m/Y', strtotime($key['tanggal_pengaduan'])) : '-';
         $tanggal_kejadian = !empty($key['tanggal_kejadian']) ? date('d/m/Y', strtotime($key['tanggal_kejadian'])) : '-';
-        $status = $key['status'];
-        
-        // Gaya status
-        if ($status == "Ditanggapi") {
-            $style_status = "<p style=\"background-color:#009688;color:#fff;padding:2px;margin-top:16px;font-size:15px;font-style:italic;\">Ditanggapi</p>";
-        } else {
-            $style_status = "<p style=\"background-color:#FF9800;color:#fff;padding:2px;margin-top:16px;font-size:15px;font-style:italic;\">Menunggu</p>";
-        }
-    }
         ?>
-                <tr>
-                    <td><?php echo $key['nama_plp']; ?></td>
-                    <td><?php echo $key['no_hp_plp']; ?></td>
-                    <td><?php echo $key['kls_plp']; ?></td>
-                    <td><?php echo $key['nama_krb']; ?></td>
-                    <td><?php echo $key['no_hp_krb']; ?></td>
-                    <td><?php echo $key['kls_krb']; ?></td>
-                    <td><?php echo $key['nama_plk']; ?></td>
-                    <td><?php echo $key['no_hp_plk']; ?></td>
-                    <td><?php echo $tanggal_pengaduan; ?></td>
-                    <td><?php echo $tanggal_kejadian; ?></td>
-                    <td><?php echo $key['tempat_kejadian']; ?></td>
-                    <td><?php echo $key['kategori_kekerasan']; ?></td>
-                    <td><?php echo $key['subjek_pengaduan']; ?></td>
-                    <td><?php echo $key['kronologi_kejadian']; ?></td>
-                    <td><?php echo $key['bukti_kekerasan']; ?></td>
-                    <td><?php echo $style_status; ?></td>
-                </tr>
-                <?php
-                }
-                ?>
-            </tbody>
-        </table>
-    </div>
-</div>
+        <tr>
+            <td><?php echo $key['nama_plp']; ?></td>
+            <td><?php echo $key['no_hp_plp']; ?></td>
+            <td><?php echo $key['kls_plp']; ?></td>
+            <td><?php echo $key['nama_krb']; ?></td>
+            <td><?php echo $key['no_hp_krb']; ?></td>
+            <td><?php echo $key['kls_krb']; ?></td>
+            <td><?php echo $key['nama_plk']; ?></td>
+            <td><?php echo $key['no_hp_plk']; ?></td>
+            <td><?php echo $tanggal_pengaduan; ?></td>
+            <td><?php echo $tanggal_kejadian; ?></td>
+            <td><?php echo $key['tempat_kejadian']; ?></td>
+            <td><?php echo $key['kategori_kekerasan']; ?></td>
+            <td><?php echo $key['subjek_pengaduan']; ?></td>
+            <td><?php echo $key['kronologi_kejadian']; ?></td>
+            <td>
+                        <?php 
+                        $bukti = $key['bukti_kekerasan']; // Nama file dari database
+                        $file_path = "images/$bukti"; // Jalur relatif untuk browser
+
+                        if (!empty($bukti) && file_exists(__DIR__ . "/images/$bukti")) {
+                            $file_extension = strtolower(pathinfo($bukti, PATHINFO_EXTENSION));
+
+                            // Jika file adalah gambar
+                            if (in_array($file_extension, ['jpg', 'jpeg', 'png'])) {
+                                echo "<a href='$file_path' target='_blank'>
+                                        <img src='$file_path' alt='Bukti Kekerasan' style='width: 100px; height: auto;'>
+                                    </a>";
+                            } 
+                            // Jika file adalah PDF
+                            elseif ($file_extension === 'pdf') {
+                                echo "<a href='$file_path' target='_blank'>Lihat PDF</a>";
+                            }
+                        } else {
+                            echo "Tidak ada bukti";
+                        }
+                        ?>
+                    </td>
+            <td><?php echo $key['status']; ?></td> <!-- Status ditampilkan tanpa gaya -->
+        </tr>
+        <?php
+    }
+}
+?>
+
+       
+ 
+
 
                             </tbody>
                         </table>
@@ -392,7 +503,30 @@ if (!empty($result)) {
         <script src="js/admin-datatables.js"></script>
 
     </div>
+    <script>
+                function printTable() {
+            // Ambil elemen tabel berdasarkan ID yang benar
+            var tableContent = document.getElementById('dataTable').outerHTML;
 
+            // Buka jendela baru untuk mencetak
+            var printWindow = window.open('', '', 'width=800,height=600');
+            printWindow.document.write('<html><head><title>Print Tabel</title>');
+            printWindow.document.write('<style>');
+            printWindow.document.write('table { width: 100%; border-collapse: collapse; }');
+            printWindow.document.write('table, th, td { border: 1px solid black; }');
+            printWindow.document.write('th, td { padding: 8px; text-align: left; }');
+            printWindow.document.write('th { background-color: #f2f2f2; }');
+            printWindow.document.write('</style>');
+            printWindow.document.write('</head><body>');
+            printWindow.document.write(tableContent);
+            printWindow.document.write('</body></html>');
+
+            // Cetak isi jendela
+            printWindow.document.close();
+            printWindow.print();
+        }
+
+    </script>
 </body>
 
 </html>

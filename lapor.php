@@ -36,7 +36,6 @@ include('navbar.php');
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Ambil data dari form
-    
     $nama_plp = $_POST['nama_pelapor'];
     $no_hp_plp = $_POST['nomor_pelapor'];
     $kls_plp = $_POST['kelas_pelapor'];
@@ -54,46 +53,69 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $kategori_kekerasan = $_POST['kategori_kekerasan'];
     $subjek_pengaduan = $_POST['subjek_pengaduan'];
     $kronologi_kejadian = $_POST['kronologi_kejadian'];
-    $bukti_kekerasan = $_POST['bukti_kekerasan'];
 
-    // Generate id_laporan
-    $statement = $db->query("SELECT id_laporan FROM laporan ORDER BY id_laporan DESC LIMIT 1");
-    if ($statement->rowCount() > 0) {
-        $row = $statement->fetch();
-        $max_id = intval(substr($row['id_laporan'], -5)) + 1;
+    // Proses file bukti kekerasan
+    if (isset($_FILES['bukti_kekerasan']) && $_FILES['bukti_kekerasan']['error'] == 0) {
+        // Validasi file upload
+        $allowed_extensions = ['jpg', 'jpeg', 'png', 'pdf'];
+        $file_extension = pathinfo($_FILES['bukti_kekerasan']['name'], PATHINFO_EXTENSION);
+    
+        if (!in_array(strtolower($file_extension), $allowed_extensions)) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Hanya file dengan ekstensi jpg, jpeg, png, atau pdf yang diperbolehkan.'
+            ]);
+            exit;
+        }
+    
+        // Tentukan nama file baru
+        $upload_dir = 'admin/images/';
+        $file_name = uniqid('bukti_', true) . '.' . $file_extension;
+        $file_path = $upload_dir . $file_name;
+    
+        // Pindahkan file ke folder upload
+        if (!move_uploaded_file($_FILES['bukti_kekerasan']['tmp_name'], $file_path)) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Gagal mengunggah file.'
+            ]);
+            exit;
+        }
+    
+        // Simpan hanya nama file ke database
+        $bukti_kekerasan = $file_name;
     } else {
-        $max_id = 1;
+        echo json_encode([
+            'success' => false,
+            'message' => 'Bukti kekerasan tidak diunggah.'
+        ]);
+        exit;
     }
-    $id_laporan = 'IDL-' . date('Ymd') . '-' . str_pad($max_id, 5, '0', STR_PAD_LEFT);
+    
 
     try {
         // Siapkan query SQL untuk menyimpan data
-       // Ambil id_user dari session
+        $query = "INSERT INTO laporan (
+            id_laporan, id_user,
+            nama_plp, no_hp_plp, kls_plp,
+            nama_krb, no_hp_krb, kls_krb,
+            nama_plk, no_hp_plk,
+            tanggal_pengaduan, tanggal_kejadian, tempat_kejadian,
+            kategori_kekerasan, subjek_pengaduan, kronologi_kejadian, bukti_kekerasan, status
+        ) VALUES (
+            :id_laporan, :id_user,
+            :nama_plp, :no_hp_plp, :kls_plp,
+            :nama_krb, :no_hp_krb, :kls_krb,
+            :nama_plk, :no_hp_plk,
+            :tanggal_pengaduan, :tanggal_kejadian, :tempat_kejadian,
+            :kategori_kekerasan, :subjek_pengaduan, :kronologi_kejadian, :bukti_kekerasan, 'Menunggu'
+        )";
 
-            // Query untuk menyimpan data
-            $query = "INSERT INTO laporan (
-                id_laporan, id_user,
-                nama_plp, no_hp_plp, kls_plp,
-                nama_krb, no_hp_krb, kls_krb,
-                nama_plk, no_hp_plk,
-                tanggal_pengaduan, tanggal_kejadian, tempat_kejadian,
-                kategori_kekerasan, subjek_pengaduan, kronologi_kejadian, bukti_kekerasan, status 
-            ) VALUES (
-                :id_laporan, :id_user,
-                :nama_plp, :no_hp_plp, :kls_plp,
-                :nama_krb, :no_hp_krb, :kls_krb,
-                :nama_plk, :no_hp_plk,
-                :tanggal_pengaduan, :tanggal_kejadian, :tempat_kejadian,
-                :kategori_kekerasan, :subjek_pengaduan, :kronologi_kejadian, :bukti_kekerasan, 'Menunggu'
-            )";
-
-            $statement = $db->prepare($query);
-
-            // Bind parameter id_user
-            $statement->bindParam(':id_user', $id_user);
+        $statement = $db->prepare($query);
 
         // Bind parameter
         $statement->bindParam(':id_laporan', $id_laporan);
+        $statement->bindParam(':id_user', $id_user);
         $statement->bindParam(':nama_plp', $nama_plp);
         $statement->bindParam(':no_hp_plp', $no_hp_plp);
         $statement->bindParam(':kls_plp', $kls_plp);
@@ -109,8 +131,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $statement->bindParam(':subjek_pengaduan', $subjek_pengaduan);
         $statement->bindParam(':kronologi_kejadian', $kronologi_kejadian);
         $statement->bindParam(':bukti_kekerasan', $bukti_kekerasan);
-        $statement->bindParam(':id_user', $id_user);
-        
 
         // Eksekusi query
         $statement->execute();
@@ -127,6 +147,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     exit;
 }
+
 ?>
 
 <!-- Tambahkan SweetAlert2 Library -->
@@ -287,7 +308,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div class="form-group">
                 <label for="bukti-kekerasan">Bukti Kekerasan</label>
-                <input type="text" id="bukti-kekerasan" name="bukti_kekerasan" required>
+                <input type="file" id="bukti-kekerasan" name="bukti_kekerasan" required>
             </div>
         </div>
 

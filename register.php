@@ -17,18 +17,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($password)) $errors['password'] = "Password wajib diisi.";
     if ($password !== $password_confirm) $errors['password_confirm'] = "Konfirmasi password tidak cocok.";
 
-    // Jika tidak ada error, simpan ke database
     if (empty($errors)) {
         // Generate ID user (tanggal + nomor urut + 'U')
         $date = date("Ymd");
-        $statement = $db->query("SELECT COUNT(*) AS total FROM user WHERE id_user LIKE '{$date}%'");
+    
+        // Cari ID terakhir di database yang sesuai dengan tanggal hari ini
+        $statement = $db->query("SELECT id_user FROM user WHERE id_user LIKE '{$date}%' ORDER BY id_user DESC LIMIT 1");
         $result = $statement->fetch(PDO::FETCH_ASSOC);
-        $urut = str_pad($result['total'] + 1, 3, '0', STR_PAD_LEFT);
+    
+        if ($result) {
+            // Ambil nomor urut terakhir dan tambahkan 1
+            $last_id = substr($result['id_user'], 8, 3); // Ambil bagian nomor urut
+            $urut = str_pad($last_id + 1, 3, '0', STR_PAD_LEFT);
+        } else {
+            // Jika belum ada ID di tanggal hari ini, mulai dari 001
+            $urut = '001';
+        }
+    
         $id_user = $date . $urut . 'U';
-
+    
         // Hash password sebelum menyimpan
         $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-
+    
         // Insert data ke database
         $stmt = $db->prepare("INSERT INTO user (id_user, nama_user, email, no_hp, password) VALUES (:id_user, :nama_user, :email, :no_hp, :password)");
         $stmt->bindParam(':id_user', $id_user);
@@ -36,10 +46,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->bindParam(':email', $email);
         $stmt->bindParam(':no_hp', $no_hp);
         $stmt->bindParam(':password', $hashed_password);
-
+    
         if ($stmt->execute()) {
             echo "Registrasi berhasil!";
-            header("Location: success.php");
+            header("Location: login.php");
             exit;
         } else {
             echo "Gagal menyimpan data.";
@@ -47,7 +57,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
