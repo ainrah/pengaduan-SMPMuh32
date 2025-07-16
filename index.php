@@ -150,7 +150,7 @@ function RandomAvatar(){
                 <img src="images/header_02.jpg" alt="...">
                 <div class="carousel-caption welcome">
                     <h2 class="animated bounceInRight">Selamat Datang</h2>
-                    <h3 class="animated bounceInLeft">Website Pengaduan SMP Muhammadiyah 32 Jakarta Barat</h3>
+                    <h3 class="animated bounceInLeft">Website PEDULIMU SMP Muhammadiyah 32 Jakarta Barat</h3>
                 </div>
             </div>
             <div class="item">
